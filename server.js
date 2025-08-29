@@ -2,18 +2,20 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
-const FULL_NAME = "Jyothi Swaroopa Karanam C";        
-const DOB_DDMMYYYY = "12062005";                
-const EMAIL = "karanamjyothiswaroopa@gmail";                
-const ROLL = "22BCE1677";                     
+// Your details
+const FULL_NAME = "Jyothi Swaroopa Karanam C";
+const DOB_DDMMYYYY = "12062005";
+const EMAIL = "karanamjyothiswaroopa@gmail.com"; // ✅ added .com
+const ROLL = "22BCE1677";
 
 app.post("/bfhl", (req, res) => {
   try {
     const { data } = req.body || {};
     if (!Array.isArray(data)) {
-      return res
-        .status(400)
-        .json({ is_success: false, message: "Invalid input: 'data' must be an array of strings." });
+      return res.status(400).json({
+        is_success: false,
+        message: "Invalid input: 'data' must be an array of strings.",
+      });
     }
 
     const odd_numbers = [];
@@ -26,19 +28,22 @@ app.post("/bfhl", (req, res) => {
       const s = String(item);
 
       if (/^\d+$/.test(s)) {
+        // Number
         const num = parseInt(s, 10);
         sum += num;
-        (num % 2 === 0 ? even_numbers : odd_numbers).push(s); // keep as strings
+        (num % 2 === 0 ? even_numbers : odd_numbers).push(s); // store as strings
       } else if (/^[A-Za-z]+$/.test(s)) {
-        alphabets.push(s.toUpperCase()); // store uppercase words
+        // Alphabets
+        alphabets.push(s.toUpperCase()); // keep uppercase
       } else {
+        // Special characters
         special_characters.push(s);
       }
     }
 
-    // Build reverse + alternating caps from all letters
-    const lettersJoined = alphabets.join("");           // join all words (already UPPER)
-    const reversed = lettersJoined.split("").reverse(); // reverse characters
+    // Build concat_string (reverse + alternating caps)
+    const lettersJoined = alphabets.join(""); // join all words
+    const reversed = lettersJoined.split("").reverse();
     const concat_string = reversed
       .map((ch, i) => (i % 2 === 0 ? ch.toUpperCase() : ch.toLowerCase()))
       .join("");
@@ -52,15 +57,18 @@ app.post("/bfhl", (req, res) => {
       even_numbers,
       alphabets,
       special_characters,
-      sum: String(sum),
+      sum: String(sum), // ✅ sum must be string
       concat_string,
     });
   } catch (err) {
-    return res.status(500).json({ is_success: false, message: "Server error" });
+    return res.status(500).json({
+      is_success: false,
+      message: "Server error",
+    });
   }
 });
 
-// (optional) tiny health check
+// Health check
 app.get("/", (_req, res) => res.send("OK"));
 
 const PORT = process.env.PORT || 3000;
